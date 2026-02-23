@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* --- FONDO OSCURO ORIGINAL --- */
+body {
+  @apply min-h-screen text-white overflow-x-hidden;
+  background: linear-gradient(135deg, #0a0a1f, #05050b 70%);
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ANIMACIONES */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.input-neon:focus {
+  border-color: #ff00e1;
+  box-shadow: 0 0 15px #ff00e1;
+  outline: none;
+}
+
+/* CARDS NEÓN */
+.neon-card {
+  background: rgba(10, 10, 30, 0.6);
+  border: 1px solid #3c1cff99;
+  box-shadow: 0 0 20px #6a3cff66;
+  backdrop-filter: blur(8px);
+  border-radius: 15px;
+}
+
+/* BOTÓN NEÓN GAMER */
+.btn-neon {
+  background: linear-gradient(90deg, #00eaff, #8a2be2, #39ff14);
+  background-size: 300% 300%;
+  animation: neon-pulse 6s infinite alternate;
+  @apply text-white py-3 rounded-lg font-bold transition;
+}
+
+@keyframes neon-pulse {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
