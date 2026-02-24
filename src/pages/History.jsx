@@ -9,7 +9,7 @@ export default function History() {
 
   async function loadHistory() {
     try {
-      const res = await axios.get("http://localhost:3000/event");
+      const res = await axios.get("https://be.ericsebb.qzz.io/event");
       setHistory(res.data);
     } catch (error) {
       console.error("Error cargando historial", error);

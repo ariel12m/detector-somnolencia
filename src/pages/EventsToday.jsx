@@ -10,7 +10,7 @@ export default function EventsToday() {
   async function loadEventsToday() {
     try {
       // Obtener todos los eventos del backend
-      const res = await axios.get("http://localhost:3000/event");
+      const res = await axios.get("https://be.ericsebb.qzz.io/event");
       
       // Filtrar solo los eventos de hoy
       const today = new Date();

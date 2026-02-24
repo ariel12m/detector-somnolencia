@@ -18,7 +18,7 @@ export default function Dashboard() {
   async function loadData() {
     try {
       // Obtener todos los eventos
-      const res = await axios.get("http://localhost:3000/event");
+      const res = await axios.get("https://be.ericsebb.qzz.io/event");
       setEvents(res.data);
 
       // Cargar datos del usuario
