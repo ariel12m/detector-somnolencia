@@ -52,10 +52,7 @@ export default function Dashboard() {
     const todayEvents = allEvents.filter(event => {
       const eventDate = new Date(event.createdAt);
       eventDate.setHours(0, 0, 0, 0);
-      const isToday = eventDate.getTime() === today.getTime();
-      const isSleepEvent = event.title?.toLowerCase().includes("sleep") || 
-                           event.title?.toLowerCase().includes("somnolencia");
-      return isToday && isSleepEvent;
+      return eventDate.getTime() === today.getTime();
     });
 
     // Contar eventos de somnolencia
@@ -130,7 +127,7 @@ export default function Dashboard() {
   useEffect(() => {
     loadData();
     
-    // Polling cada 15 segundos
+    // Polling cada 5 segundos
     const interval = setInterval(() => {
       loadData();
     }, 5000);
