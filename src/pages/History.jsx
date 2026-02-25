@@ -20,6 +20,13 @@ export default function History() {
 
   useEffect(() => {
     loadHistory();
+    
+    // Polling cada 5 segundos
+    const interval = setInterval(() => {
+      loadHistory();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   return (
@@ -62,7 +69,7 @@ export default function History() {
                         {new Date(event.createdAt).toLocaleString()}
                       </td>
                     </tr>
-                  ))}el
+                  ))}
                 </tbody>
               </table>
             </div>

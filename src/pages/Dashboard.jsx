@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [events, setEvents] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isUpdating, setIsUpdating] = useState(false);
   const [sleepData, setSleepData] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editForm, setEditForm] = useState({});
@@ -17,6 +18,8 @@ export default function Dashboard() {
 
   async function loadData() {
     try {
+      setIsUpdating(true);
+      
       // Obtener todos los eventos
       const res = await axios.get("https://be.ericsebb.qzz.io/event");
       setEvents(res.data);
@@ -37,6 +40,7 @@ export default function Dashboard() {
       console.error("Error cargando datos:", error);
     } finally {
       setLoading(false);
+      setIsUpdating(false);
     }
   }
 
@@ -48,20 +52,23 @@ export default function Dashboard() {
     const todayEvents = allEvents.filter(event => {
       const eventDate = new Date(event.createdAt);
       eventDate.setHours(0, 0, 0, 0);
-      return eventDate.getTime() === today.getTime();
+      const isToday = eventDate.getTime() === today.getTime();
+      const isSleepEvent = event.title?.toLowerCase().includes("sleep") || 
+                           event.title?.toLowerCase().includes("somnolencia");
+      return isToday && isSleepEvent;
     });
 
     // Contar eventos de somnolencia
+    // 1 evento = 1% de somnolencia, máximo 100%
     const sleepyCount = todayEvents.length;
-    const totalHours = 8; // Asumir 8 horas de conducción
-    const sleepyPercentage = (sleepyCount / 100) * 100; // % de eventos
+    const sleepyPercentage = Math.min(sleepyCount, 100); // Cada evento = 1%
     const awakePercentage = 100 - sleepyPercentage;
 
     setSleepData({
       sleepy: sleepyCount,
-      awake: totalHours * 60 - sleepyCount, // minutos
-      sleepyPercentage: Math.min(sleepyPercentage, 100),
-      awakePercentage: Math.max(awakePercentage, 0),
+      awake: 100 - sleepyCount, // Minutos/eventos despierto
+      sleepyPercentage: sleepyPercentage,
+      awakePercentage: awakePercentage,
     });
   }
 
@@ -122,6 +129,13 @@ export default function Dashboard() {
 
   useEffect(() => {
     loadData();
+    
+    // Polling cada 15 segundos
+    const interval = setInterval(() => {
+      loadData();
+    }, 5000);
+
+    return () => clearInterval(interval);
   }, []);
 
   // Filtrar eventos de hoy
@@ -140,9 +154,17 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gradient-to-br from-[#0a001a] via-[#1a0033] to-[#0a001a]">
       {/* SIDEBAR/NAVBAR INTEGRADA */}
       <div className="w-full py-4 px-6 flex justify-between items-center bg-[#0a001a]/70 backdrop-blur-md border-b border-cyan-400/30 shadow-md sticky top-0 z-50">
-        <h1 className="text-3xl font-bold text-cyan-300 drop-shadow-lg">
-          Somnolencia
-        </h1>
+        <div className="flex items-center gap-3">
+          <h1 className="text-3xl font-bold text-cyan-300 drop-shadow-lg">
+            Somnolencia
+          </h1>
+          {isUpdating && (
+            <span className="inline-flex items-center gap-2 text-sm text-cyan-400">
+              <span className="animate-spin">⟳</span>
+              Actualizando...
+            </span>
+          )}
+        </div>
 
         <button
           onClick={logout}
@@ -251,6 +273,7 @@ export default function Dashboard() {
                             strokeDashoffset="0"
                             transform="rotate(-90 50 50)"
                             strokeLinecap="round"
+                            style={{ transition: "stroke-dasharray 0.5s ease" }}
                           />
 
                           {/* Segmento de Somnolencia */}
@@ -265,6 +288,7 @@ export default function Dashboard() {
                             strokeDashoffset={`-${(sleepData.awakePercentage / 100) * 251.2}`}
                             transform="rotate(-90 50 50)"
                             strokeLinecap="round"
+                            style={{ transition: "stroke-dasharray 0.5s ease, stroke-dashoffset 0.5s ease" }}
                           />
 
                           {/* Centro del círculo */}
@@ -273,7 +297,7 @@ export default function Dashboard() {
 
                         {/* Texto en el centro */}
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-2xl font-bold text-cyan-300">
+                          <span className="text-2xl font-bold text-cyan-300 transition-all">
                             {sleepData.sleepyPercentage.toFixed(0)}%
                           </span>
                           <span className="text-xs text-gray-400">Somnolencia</span>
