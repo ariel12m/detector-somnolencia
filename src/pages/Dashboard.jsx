@@ -21,7 +21,7 @@ export default function Dashboard() {
       setIsUpdating(true);
       
       // Obtener todos los eventos
-      const res = await axios.get("https://be.ericsebb.qzz.io/event");
+      const res = await axios.get("http://localhost:3000/event");
       setEvents(res.data);
 
       // Cargar datos del usuario
